@@ -5,7 +5,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,7 +17,6 @@ import com.example.myapplication.data.store.DevelopersLifeStore;
 import com.example.myapplication.data.store.DevelopersLifeStoreImpl;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.domain.interactor.DevelopersLifeInteractor;
-import com.example.myapplication.domain.model.RandomImageDomain;
 import com.example.myapplication.presentation.viewmodel.DevelopersLifeViewModel;
 import com.example.myapplication.utils.SchedulersProvider;
 import com.example.myapplication.utils.SchedulersProviderImpl;
@@ -36,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private DevelopersLifeViewModel mViewModel;
     private ActivityMainBinding mBinding;
+    private int mCurrId;
+    private int mFirstId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +48,12 @@ public class MainActivity extends AppCompatActivity {
         observeLiveData();
 
         if (savedInstanceState == null) {
-            mViewModel.loadImage();
+            mViewModel.loadNextImage(mCurrId);
         }
 
-        mBinding.buttonForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewModel.loadImage();
-            }
-        });
+        mBinding.buttonForward.setOnClickListener(v -> mViewModel.loadNextImage(mCurrId));
+
+        mBinding.buttonBack.setOnClickListener(v -> mViewModel.loadPrevImage(mCurrId));
     }
 
     private void createViewModel() {
@@ -86,13 +83,16 @@ public class MainActivity extends AppCompatActivity {
     private void observeLiveData() {
         mViewModel.getProgressLiveData().observe(this, aBoolean -> mBinding.progressbarView.setVisibility(aBoolean ? View.VISIBLE : View.GONE));
         mViewModel.getErrorLiveData().observe(this, throwable -> Snackbar.make(mBinding.getRoot(), throwable.toString(), BaseTransientBottomBar.LENGTH_LONG).show());
-        mViewModel.getRandomImageData().observe(this, new Observer<RandomImageDomain>() {
-            @Override
-            public void onChanged(RandomImageDomain randomImageDomain) {
-                Glide.with(getApplicationContext())
-                        .load(randomImageDomain.getGifUrl())
-                        .into(mBinding.gifView);
+        mViewModel.getRandomImageData().observe(this, randomImageDomain -> {
+            Glide.with(getApplicationContext())
+                    .load(randomImageDomain.getGifUrl())
+                    .into(mBinding.gifView);
+            mBinding.gifDescription.setText(randomImageDomain.getDescription());
+            if (mCurrId == 0) {
+                mFirstId = randomImageDomain.getId();
             }
+            mCurrId = randomImageDomain.getId();
+            mBinding.buttonBack.setEnabled(mCurrId != mFirstId);
         });
     }
 
