@@ -26,7 +26,16 @@ public class DevelopersLifeRepositoryImpl implements DevelopersLifeRepository {
     }
 
     @Override
-    public RandomImageResponse getImageFromStoreById(int id) throws IOException {
-        return mDevelopersLifeStore.getSavedImage(id);
+    public RandomImageResponse getPreviousImage(int id) throws IOException {
+        return mDevelopersLifeStore.getPreviousImage(id);
+    }
+
+    @Override
+    public RandomImageResponse getNextImage(int id) throws IOException {
+        if (mDevelopersLifeStore.getNextImage(id) != null) {
+            return mDevelopersLifeStore.getNextImage(id);
+        } else {
+            return getRandomImage();
+        }
     }
 }

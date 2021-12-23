@@ -16,8 +16,13 @@ public class DevelopersLifeInteractor {
         mDevelopersLifeRepository = developersLifeRepository;
     }
 
-    public RandomImageDomain getImage() throws IOException {
-        RandomImageResponse image = mDevelopersLifeRepository.getRandomImage();
+    public RandomImageDomain getPrevImage(int id) throws IOException {
+        RandomImageResponse image = mDevelopersLifeRepository.getPreviousImage(id);
+        return new RandomImageDomain(image.getId(), image.getDescription(), image.getGifUrl());
+    }
+
+    public RandomImageDomain getNextImage(int id) throws IOException {
+        RandomImageResponse image = mDevelopersLifeRepository.getNextImage(id);
         return new RandomImageDomain(image.getId(), image.getDescription(), image.getGifUrl());
     }
 }

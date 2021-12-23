@@ -9,4 +9,8 @@ public interface DevelopersLifeStore {
     void saveImage(RandomImageResponse randomImageResponse);
 
     RandomImageResponse getSavedImage(int id) throws IOException;
+
+    RandomImageResponse getPreviousImage(int id) throws IOException;
+
+    RandomImageResponse getNextImage(int id) throws IOException;
 }

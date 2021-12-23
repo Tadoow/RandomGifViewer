@@ -8,5 +8,7 @@ public interface DevelopersLifeRepository {
 
     RandomImageResponse getRandomImage() throws IOException;
 
-    RandomImageResponse getImageFromStoreById(int id) throws IOException;
+    RandomImageResponse getPreviousImage(int id) throws IOException;
+
+    RandomImageResponse getNextImage(int id) throws IOException;
 }

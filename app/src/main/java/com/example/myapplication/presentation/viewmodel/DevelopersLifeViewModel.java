@@ -26,8 +26,17 @@ public class DevelopersLifeViewModel extends ViewModel {
         mSchedulersProvider = schedulersProvider;
     }
 
-    public void loadImage() {
-        mDisposable = Single.fromCallable(mInteractor::getImage)
+    public void loadNextImage(int id) {
+        mDisposable = Single.fromCallable(() -> mInteractor.getNextImage(id))
+                .doOnSubscribe(disposable -> mProgressLiveData.postValue(true))
+                .doAfterTerminate(() -> mProgressLiveData.postValue(false))
+                .subscribeOn(mSchedulersProvider.io())
+                .observeOn(mSchedulersProvider.ui())
+                .subscribe(mRandomImageData::setValue, mErrorLiveData::setValue);
+    }
+
+    public void loadPrevImage(int id) {
+        mDisposable = Single.fromCallable(() -> mInteractor.getPrevImage(id))
                 .doOnSubscribe(disposable -> mProgressLiveData.postValue(true))
                 .doAfterTerminate(() -> mProgressLiveData.postValue(false))
                 .subscribeOn(mSchedulersProvider.io())
